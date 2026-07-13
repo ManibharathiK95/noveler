@@ -28,13 +28,11 @@
             display: flex; height: 100vh; overflow: hidden;
         }
 
-        /* SCROLLBAR */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-        /* LEFT SIDEBAR */
         .sidebar-left {
             width: 280px; min-width: 280px; background: var(--bg-dark);
             border-right: 1px solid var(--border); display: flex; flex-direction: column;
@@ -74,11 +72,12 @@
 
         .btn-icon {
             background: none; border: none; color: var(--text-muted); cursor: pointer;
-            font-size: 16px; padding: 2px 4px; border-radius: 3px;
+            font-size: 14px; padding: 2px 4px; border-radius: 3px;
         }
         .btn-icon:hover { color: var(--accent); background: var(--bg-darkest); }
+        .btn-icon.rename { font-size: 11px; opacity: 0.5; }
+        .btn-icon.rename:hover { opacity: 1; color: var(--warning); }
 
-        /* MAIN EDITOR */
         .main-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-darkest); }
         .toolbar {
             background: var(--bg-dark); padding: 8px 15px; border-bottom: 1px solid var(--border);
@@ -122,7 +121,6 @@
         .goal-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
         .word-count-display { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
 
-        /* RIGHT SIDEBAR (DASHBOARD) */
         .sidebar-right {
             width: 340px; min-width: 340px; background: var(--bg-dark);
             border-left: 1px solid var(--border); display: flex; flex-direction: column;
@@ -150,7 +148,6 @@
         }
         .dash-textarea:focus { outline: none; border-color: var(--accent); }
 
-        /* Organise Tab Specifics */
         .org-section { margin-bottom: 20px; }
         .org-header {
             display: flex; justify-content: space-between; align-items: center;
@@ -175,7 +172,6 @@
         }
         .btn-delete-card:hover { color: var(--danger); }
 
-        /* MODAL */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); z-index: 1000; display: none;
@@ -212,7 +208,6 @@
 </head>
 <body>
 
-    <!-- MODAL -->
     <div class="modal-overlay" id="modal">
         <div class="modal-box">
             <h3 id="modal-heading">Add Item</h3>
@@ -225,7 +220,6 @@
         </div>
     </div>
 
-    <!-- LEFT SIDEBAR -->
     <div class="sidebar-left" id="sidebar-left">
         <div class="sidebar-header">
             <div class="logo">NOVELER</div>
@@ -234,7 +228,6 @@
         <div class="tree-container" id="tree-container"></div>
     </div>
 
-    <!-- MAIN AREA -->
     <div class="main-area">
         <div class="toolbar">
             <button class="btn-icon" onclick="toggleSidebars()" title="Focus Mode">☰</button>
@@ -267,10 +260,7 @@
         </div>
 
         <div class="editor-scroll">
-            <div class="writing-area" id="editor" contenteditable="true" oninput="handleInput()">
-                <h2>Start Writing</h2>
-                <p>Select or create a chapter/scene from the left, or just start typing here.</p>
-            </div>
+            <div class="writing-area" id="editor" contenteditable="true" oninput="handleInput()"></div>
         </div>
 
         <div class="bottom-bar">
@@ -282,14 +272,12 @@
         </div>
     </div>
 
-    <!-- RIGHT SIDEBAR -->
     <div class="sidebar-right" id="sidebar-right">
         <div class="dash-main-tabs">
             <button class="dash-main-tab active" onclick="switchMainDash('plot', this)">Plot</button>
             <button class="dash-main-tab" onclick="switchMainDash('organise', this)">Organise</button>
         </div>
 
-        <!-- PLOT TAB -->
         <div id="dash-plot" class="dash-content active">
             <textarea class="dash-textarea" data-dash="plot-premise" placeholder="Core Premise (e.g., 3 parts of a face hidden in 9 lands...)"></textarea>
             <textarea class="dash-textarea" data-dash="plot-b1" placeholder="Book 1 Summary / Arc..."></textarea>
@@ -298,73 +286,93 @@
             <textarea class="dash-textarea" data-dash="plot-logic" placeholder="Continuity / Logic Tracker (e.g., B1Ch2: Hero loses sword...)"></textarea>
         </div>
 
-        <!-- ORGANISE TAB -->
         <div id="dash-organise" class="dash-content">
-            
             <div class="org-section">
-                <div class="org-header">
-                    <span class="org-title">Characters</span>
-                    <button class="btn-add-org" onclick="openModal('characters')">+ Add</button>
-                </div>
+                <div class="org-header"><span class="org-title">Characters</span><button class="btn-add-org" onclick="openModal('characters')">+ Add</button></div>
                 <div id="list-characters"></div>
             </div>
-
             <div class="org-section">
-                <div class="org-header">
-                    <span class="org-title">Events</span>
-                    <button class="btn-add-org" onclick="openModal('events')">+ Add</button>
-                </div>
+                <div class="org-header"><span class="org-title">Events</span><button class="btn-add-org" onclick="openModal('events')">+ Add</button></div>
                 <div id="list-events"></div>
             </div>
-
             <div class="org-section">
-                <div class="org-header">
-                    <span class="org-title">Locations (9 Lands)</span>
-                    <button class="btn-add-org" onclick="openModal('locations')">+ Add</button>
-                </div>
+                <div class="org-header"><span class="org-title">Locations (9 Lands)</span><button class="btn-add-org" onclick="openModal('locations')">+ Add</button></div>
                 <div id="list-locations"></div>
             </div>
-
             <div class="org-section">
-                <div class="org-header">
-                    <span class="org-title">Props / Magic</span>
-                    <button class="btn-add-org" onclick="openModal('props')">+ Add</button>
-                </div>
+                <div class="org-header"><span class="org-title">Props / Magic</span><button class="btn-add-org" onclick="openModal('props')">+ Add</button></div>
                 <div id="list-props"></div>
             </div>
-
             <div class="org-section">
-                <div class="org-header">
-                    <span class="org-title">Extra</span>
-                    <button class="btn-add-org" onclick="openModal('extra')">+ Add</button>
-                </div>
+                <div class="org-header"><span class="org-title">Extra</span><button class="btn-add-org" onclick="openModal('extra')">+ Add</button></div>
                 <div id="list-extra"></div>
             </div>
-
         </div>
     </div>
 
 <script>
 // --- STATE ---
 let state = {
-    structure: {
-        "Book 1": { "Chapter 1": { "Scene 1": { text: "", status: "draft" } } }
-    },
+    structure: { "Book 1": { "Chapter 1": { "Scene 1": { text: "", status: "draft" } } } },
     dashboard: {},
-    organise: {
-        characters: [], events: [], locations: [], props: [], extra: []
-    },
-    activePath: null,
-    wordsToday: 0,
-    lastDate: new Date().toDateString(),
-    lastSceneCount: 0
+    organise: { characters: [], events: [], locations: [], props: [], extra: [] },
+    activePath: null, wordsToday: 0, lastDate: new Date().toDateString(), lastSceneCount: 0
 };
 
 let tamilMode = false;
-let currentModalContext = { type: '', parentBook: '', parentChapter: '' };
+let currentModalContext = { type: '', parentBook: '', parentChapter: '', oldName: '' };
 
-// --- TAMIL TRANSLITERATION ---
-const tamilMap = {'a':'அ','aa':'ஆ','i':'இ','ii':'ஈ','u':'உ','uu':'ஊ','e':'எ','ee':'ஏ','ai':'ஐ','o':'ஒ','oo':'ஓ','au':'ஔ','k':'க்','g':'க்','ch':'ச்','j':'ஜ்','t':'ட்','th':'த்','d':'ட்','dh':'த்','p':'ப்','b':'ப்','m':'ம்','n':'ன்','ny':'ஞ்','ng':'ங்','L':'ள்','N':'ண்','r':'ற்','R':'ர்','v':'வ்','y':'ய்','s':'ஸ்','sh':'ஷ்','h':'ஹ்','S':'ச்'};
+// --- ROBUST TAMIL TRANSLITERATION ENGINE ---
+const baseCons = {"k":"க்","g":"க்","ch":"ச்","j":"ஜ்","t":"ட்","th":"த்","d":"ட்","dh":"த்","p":"ப்","b":"ப்","m":"ம்","n":"ன்","ny":"ஞ்","ng":"ங்","L":"ள்","N":"ண்","r":"ற்","R":"ர்","v":"வ்","y":"ய்","s":"ஸ்","sh":"ஷ்","h":"ஹ்","S":"ச்"};
+const vowels = {"a":"அ","aa":"ஆ","i":"இ","ii":"ஈ","u":"உ","uu":"ஊ","e":"எ","ee":"ஏ","ai":"ஐ","o":"ஒ","oo":"ஓ","au":"ஔ"};
+
+// Programmatically generate Uyirmei (Consonant + Vowel combinations like ka, kaa, ki, kuu)
+let uyirmeiMap = {};
+for(let c in baseCons) {
+    let base = baseCons[c].slice(0, -1); // remove pulli (்) e.g., 'க்' becomes 'க'
+    uyirmeiMap[c + "a"] = base; // 'ka' -> 'க'
+    for(let v in vowels) {
+        if(v !== "a") uyirmeiMap[c + v] = base + vowels[v]; // 'kaa' -> 'கா', 'ki' -> 'கி'
+    }
+}
+
+// Sort keys by length descending so 'sh' matches before 's', 'th' before 't'
+const sortedUyirmeiKeys = Object.keys(uyirmeiMap).sort((a, b) => b.length - a.length);
+const sortedVowelKeys = Object.keys(vowels).sort((a, b) => b.length - a.length);
+const sortedConsKeys = Object.keys(baseCons).sort((a, b) => b.length - a.length);
+
+function transliterateWord(word) {
+    let w = word.toLowerCase();
+    let result = '', i = 0;
+    while(i < w.length) {
+        let matched = false;
+        // 1. Check Uyirmei (consonant + vowel combos)
+        for(let k of sortedUyirmeiKeys) {
+            if(w.substring(i, i+k.length) === k) {
+                result += uyirmeiMap[k]; i += k.length; matched = true; break;
+            }
+        }
+        // 2. Check Standalone Vowels
+        if(!matched) {
+            for(let k of sortedVowelKeys) {
+                if(w.substring(i, i+k.length) === k) {
+                    result += vowels[k]; i += k.length; matched = true; break;
+                }
+            }
+        }
+        // 3. Check Standalone Consonants (adds pulli ் automatically if at end or before another consonant)
+        if(!matched) {
+            for(let k of sortedConsKeys) {
+                if(w.substring(i, i+k.length) === k) {
+                    result += baseCons[k]; i += k.length; matched = true; break;
+                }
+            }
+        }
+        // 4. Fallback for numbers, symbols, spaces
+        if(!matched) { result += w[i]; i++; }
+    }
+    return result;
+}
 
 function handleTamilInput(e) {
     if(!tamilMode || e.inputType !== 'insertText' || !e.data.match(/[a-zA-Z]/)) return;
@@ -375,17 +383,12 @@ function handleTamilInput(e) {
     if(startNode.nodeType === 3) {
         let text = startNode.textContent, wordEnd = range.startOffset, wordStart = wordEnd;
         while(wordStart > 0 && text[wordStart - 1].match(/[a-zA-Z]/)) wordStart--;
-        let currentWord = text.substring(wordStart, wordEnd) + e.data;
-        let translatedWord = currentWord; // Fallback
-        let tempRes = '', i = 0;
-        while(i < currentWord.length) {
-            let matched = false;
-            if(i < currentWord.length - 1) { let duo = currentWord.substring(i, i+2).toLowerCase(); if(tamilMap[duo]) { tempRes += tamilMap[duo]; i += 2; matched = true; } }
-            if(!matched) { let single = currentWord[i].toLowerCase(); if(tamilMap[single]) { tempRes += tamilMap[single]; } else { tempRes += currentWord[i]; } i++; }
-        }
-        translatedWord = tempRes;
+        let currentEngWord = text.substring(wordStart, wordEnd) + e.data;
+        let translatedWord = transliterateWord(currentEngWord);
+        
         text = text.substring(0, wordStart) + translatedWord + text.substring(wordEnd);
         startNode.textContent = text;
+        
         let newRange = document.createRange();
         newRange.setStart(startNode, wordStart + translatedWord.length);
         newRange.collapse(true);
@@ -393,22 +396,25 @@ function handleTamilInput(e) {
     }
 }
 
-// --- MODAL SYSTEM ---
-function openModal(type, parentBook = '', parentChapter = '') {
-    currentModalContext = { type, parentBook, parentChapter };
+// --- MODAL SYSTEM (Handles Add & Rename) ---
+function openModal(type, parentBook = '', parentChapter = '', oldName = '') {
+    currentModalContext = { type, parentBook, parentChapter, oldName };
     let modal = document.getElementById('modal');
     let heading = document.getElementById('modal-heading');
     let titleIn = document.getElementById('modal-title');
     let descIn = document.getElementById('modal-desc');
     
-    titleIn.value = ''; descIn.value = '';
+    titleIn.value = oldName || ''; descIn.value = '';
     
-    // If it's a tree item, hide description. If it's dashboard, show it.
-    if(type === 'book' || type === 'chapter' || type === 'scene') {
+    // Determine if it's a Tree item (no description) or Dashboard item (has description)
+    if(type.includes('book') || type.includes('chapter') || type.includes('scene')) {
         descIn.classList.add('desc-hidden');
         if(type === 'book') heading.innerText = "Add New Book";
-        if(type === 'chapter') heading.innerText = "Add New Chapter to " + parentBook;
-        if(type === 'scene') heading.innerText = "Add New Scene to " + parentChapter;
+        if(type === 'rename-book') heading.innerText = "Rename Book";
+        if(type === 'chapter') heading.innerText = "Add Chapter to " + parentBook;
+        if(type === 'rename-chapter') heading.innerText = "Rename Chapter";
+        if(type === 'scene') heading.innerText = "Add Scene to " + parentChapter;
+        if(type === 'rename-scene') heading.innerText = "Rename Scene";
     } else {
         descIn.classList.remove('desc-hidden');
         heading.innerText = "Add " + type.charAt(0).toUpperCase() + type.slice(1);
@@ -418,8 +424,12 @@ function openModal(type, parentBook = '', parentChapter = '') {
     setTimeout(() => titleIn.focus(), 100);
 }
 
-function closeModal() {
-    document.getElementById('modal').classList.remove('active');
+function closeModal() { document.getElementById('modal').classList.remove('active'); }
+
+function renameObjKey(obj, oldKey, newKey) {
+    if (oldKey === newKey) return;
+    Object.defineProperty(obj, newKey, Object.getOwnPropertyDescriptor(obj, oldKey));
+    delete obj[oldKey];
 }
 
 function saveModal() {
@@ -427,61 +437,57 @@ function saveModal() {
     let desc = document.getElementById('modal-desc').value.trim();
     if(!title) return;
 
-    let { type, parentBook, parentChapter } = currentModalContext;
+    let { type, parentBook, parentChapter, oldName } = currentModalContext;
 
+    // --- TREE ADDING ---
     if(type === 'book') {
         state.structure[title] = { "Chapter 1": { "Scene 1": { text: "", status: "draft" } } };
     } else if(type === 'chapter') {
         state.structure[parentBook][title] = { "Scene 1": { text: "", status: "draft" } };
     } else if(type === 'scene') {
-        state.structure[parentBook][parentChapter][title] = { text: "", status: "draft" };
-    } else {
-        // Dashboard items
+        state.structure[parentBook][parentChapter][title] = { text: "", status: "draft" } ;
+    } 
+    // --- TREE RENAMING ---
+    else if(type === 'rename-book') {
+        renameObjKey(state.structure, oldName, title);
+        if(state.activePath && state.activePath.startsWith(oldName)) {
+            state.activePath = state.activePath.replace(oldName, title);
+        }
+    } else if(type === 'rename-chapter') {
+        renameObjKey(state.structure[parentBook], oldName, title);
+        if(state.activePath) state.activePath = state.activePath.replace(oldName, title);
+    } else if(type === 'rename-scene') {
+        renameObjKey(state.structure[parentBook][parentChapter], oldName, title);
+        if(state.activePath) state.activePath = state.activePath.replace(oldName, title);
+    } 
+    // --- DASHBOARD ADDING ---
+    else {
         state.organise[type].push({ id: Date.now(), title, desc });
         renderOrganiseList(type);
     }
 
-    saveState();
-    renderTree();
-    closeModal();
+    saveState(); renderTree(); closeModal();
 }
 
-// --- DASHBOARD ORGANISE LISTS ---
+// --- DASHBOARD LISTS ---
 function renderOrganiseList(type) {
-    let container = document.getElementById(`list-${type}`);
-    container.innerHTML = '';
+    let container = document.getElementById(`list-${type}`); container.innerHTML = '';
     state.organise[type].forEach(item => {
-        let card = document.createElement('div');
-        card.className = 'org-card';
-        card.innerHTML = `
-            <button class="btn-delete-card" onclick="deleteOrgItem('${type}', ${item.id})">✕</button>
-            <div class="org-card-title">${item.title}</div>
-            <div class="org-card-desc">${item.desc}</div>
-        `;
+        let card = document.createElement('div'); card.className = 'org-card';
+        card.innerHTML = `<button class="btn-delete-card" onclick="deleteOrgItem('${type}', ${item.id})">✕</button><div class="org-card-title">${item.title}</div><div class="org-card-desc">${item.desc}</div>`;
         container.appendChild(card);
     });
 }
-
-function deleteOrgItem(type, id) {
-    state.organise[type] = state.organise[type].filter(item => item.id !== id);
-    saveState();
-    renderOrganiseList(type);
-}
+function deleteOrgItem(type, id) { state.organise[type] = state.organise[type].filter(item => item.id !== id); saveState(); renderOrganiseList(type); }
 
 function switchMainDash(id, btn) {
     document.querySelectorAll('.dash-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.dash-main-tab').forEach(el => el.classList.remove('active'));
-    document.getElementById(`dash-${id}`).classList.add('active');
-    btn.classList.add('active');
+    document.getElementById(`dash-${id}`).classList.add('active'); btn.classList.add('active');
 }
 
 // --- CORE EDITOR ---
-function handleInput() {
-    clearTimeout(window.saveTimer);
-    window.saveTimer = saveState;
-    updateWordCounts();
-}
-
+function handleInput() { clearTimeout(window.saveTimer); window.saveTimer = saveState; updateWordCounts(); }
 function execCmd(cmd, val = null) { document.execCommand(cmd, false, val); document.getElementById('editor').focus(); }
 function execLineSpacing(val) { document.getElementById('editor').style.lineHeight = val; }
 function toggleSearch() { document.getElementById('search-bar').classList.toggle('active'); }
@@ -490,11 +496,9 @@ function replaceTextAll() { let f=document.getElementById('search-input').value,
 function toggleSidebars() { document.getElementById('sidebar-left').classList.toggle('hidden'); document.getElementById('sidebar-right').classList.toggle('hidden'); }
 function toggleTamil() { tamilMode = !tamilMode; document.getElementById('tamil-toggle').classList.toggle('active'); }
 
-// --- WORD COUNTS ---
 function getWordCount(t) { if(!t) return 0; return t.replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(w=>w.length>0).length; }
 function updateWordCounts() {
-    let text = document.getElementById('editor').innerText;
-    let sceneWords = getWordCount(text);
+    let text = document.getElementById('editor').innerText; let sceneWords = getWordCount(text);
     document.getElementById('words-scene').innerText = sceneWords;
     let today = new Date().toDateString();
     if(state.lastDate !== today) { state.wordsToday = 0; state.lastDate = today; }
@@ -505,35 +509,37 @@ function updateWordCounts() {
     document.getElementById('words-today').innerText = state.wordsToday;
 }
 
-// --- TREE NAVIGATION ---
+// --- TREE NAVIGATION & RENDERING ---
 function renderTree() {
-    let container = document.getElementById('tree-container');
-    container.innerHTML = '';
+    let container = document.getElementById('tree-container'); container.innerHTML = '';
     for(let book in state.structure) {
+        let safeBook = book.replace(/'/g, "\\'");
         let bookDiv = document.createElement('div');
         bookDiv.innerHTML = `<div class="book-header" onclick="this.nextElementSibling.classList.toggle('hidden')">
             <span>📁</span><span class="book-title">${book}</span>
-            <button class="btn-icon" onclick="event.stopPropagation(); openModal('chapter', '${book.replace(/'/g, "\\'")}')">+</button>
-            <button class="btn-icon" onclick="event.stopPropagation(); openModal('scene', '${book.replace(/'/g, "\\'")}', 'New Chapter')" title="Quick Add Chapter+Scene">⧉</button>
+            <button class="btn-icon rename" onclick="event.stopPropagation(); openModal('rename-book', '', '', '${safeBook}')" title="Rename">✏️</button>
+            <button class="btn-icon" onclick="event.stopPropagation(); openModal('chapter', '${safeBook}')" title="Add Chapter">+</button>
         </div>`;
         
-        let chContainer = document.createElement('div');
-        chContainer.className = 'chapter-container';
+        let chContainer = document.createElement('div'); chContainer.className = 'chapter-container';
         for(let ch in state.structure[book]) {
+            let safeCh = ch.replace(/'/g, "\\'");
             let chDiv = document.createElement('div');
             chDiv.innerHTML = `<div class="ch-header" onclick="this.nextElementSibling.classList.toggle('hidden')">
                 <span>📂</span><span class="ch-title">${ch}</span>
-                <button class="btn-icon" onclick="event.stopPropagation(); openModal('scene', '${book.replace(/'/g, "\\'")}', '${ch.replace(/'/g, "\\'")}')">+</button>
+                <button class="btn-icon rename" onclick="event.stopPropagation(); openModal('rename-chapter', '${safeBook}', '', '${safeCh}')" title="Rename">✏️</button>
+                <button class="btn-icon" onclick="event.stopPropagation(); openModal('scene', '${safeBook}', '${safeCh}')" title="Add Scene">+</button>
             </div>`;
-            let scContainer = document.createElement('div');
-            scContainer.className = 'scene-container';
+            
+            let scContainer = document.createElement('div'); scContainer.className = 'scene-container';
             for(let sc in state.structure[book][ch]) {
                 let scData = state.structure[book][ch][sc];
                 let isActive = state.activePath === `${book}|${ch}|${sc}`;
-                let scEl = document.createElement('div');
-                scEl.className = `scene-item ${isActive ? 'active' : ''}`;
-                scEl.innerHTML = `📝 ${sc} <span class="status-badge status-${scData.status}">${scData.status}</span>`;
-                scEl.onclick = () => loadScene(book, ch, sc);
+                let safeSc = sc.replace(/'/g, "\\'");
+                let scEl = document.createElement('div'); scEl.className = `scene-item ${isActive ? 'active' : ''}`;
+                scEl.innerHTML = `📝 ${sc} <span class="status-badge status-${scData.status}">${scData.status}</span>
+                    <button class="btn-icon rename" onclick="event.stopPropagation(); openModal('rename-scene', '${safeBook}', '${safeCh}', '${safeSc}')" title="Rename">✏️</button>`;
+                scEl.onclick = (e) => { if(e.target.tagName !== 'BUTTON') loadScene(book, ch, sc); };
                 scContainer.appendChild(scEl);
             }
             chDiv.appendChild(scContainer);
@@ -549,9 +555,10 @@ function loadScene(book, ch, sc) {
     state.activePath = `${book}|${ch}|${sc}`;
     state.lastSceneCount = 0;
     let sceneData = state.structure[book][ch][sc];
-    document.getElementById('editor').innerHTML = sceneData.text || `<h2>${ch}: ${sc}</h2><p></p>`;
     
-    // Double click to change status
+    // COMPLETELY BLANK PAPER if new, load saved text if exists
+    document.getElementById('editor').innerHTML = sceneData.text || '';
+    
     document.getElementById('editor').ondblclick = function(e) {
         if(sceneData.status === 'draft') sceneData.status = 'edit';
         else if(sceneData.status === 'edit') sceneData.status = 'final';
@@ -569,10 +576,7 @@ function saveState() {
             state.structure[p[0]][p[1]][p[2]].text = document.getElementById('editor').innerHTML;
         }
     }
-    // Save plot textareas
-    document.querySelectorAll('.dash-textarea').forEach(ta => {
-        state.dashboard[ta.getAttribute('data-dash')] = ta.value;
-    });
+    document.querySelectorAll('.dash-textarea').forEach(ta => { state.dashboard[ta.getAttribute('data-dash')] = ta.value; });
     localStorage.setItem('noveler_app_state', JSON.stringify(state));
 }
 
@@ -589,7 +593,6 @@ function loadDashboard() {
         ta.value = state.dashboard[ta.getAttribute('data-dash')] || '';
         ta.oninput = () => { state.dashboard[ta.getAttribute('data-dash')] = ta.value; clearTimeout(window.dashTimer); window.dashTimer = saveState; };
     });
-    // Render all organise lists
     ['characters', 'events', 'locations', 'props', 'extra'].forEach(renderOrganiseList);
 }
 
@@ -600,26 +603,18 @@ function exportTXT() {
 
 // --- INIT ---
 window.onload = () => {
-    loadState();
-    renderTree();
-    loadDashboard();
+    loadState(); renderTree(); loadDashboard();
     document.getElementById('editor').addEventListener('beforeinput', handleTamilInput);
     
     if(!state.activePath) {
-        let b = Object.keys(state.structure)[0];
-        let c = Object.keys(state.structure[b])[0];
-        let s = Object.keys(state.structure[b][c])[0];
+        let b = Object.keys(state.structure)[0]; let c = Object.keys(state.structure[b])[0]; let s = Object.keys(state.structure[b][c])[0];
         loadScene(b, c, s);
     } else {
-        let p = state.activePath.split('|');
-        loadScene(p[0], p[1], p[2]);
+        let p = state.activePath.split('|'); loadScene(p[0], p[1], p[2]);
     }
 };
 
-// Close modal on outside click
-document.getElementById('modal').addEventListener('click', function(e) {
-    if(e.target === this) closeModal();
-});
+document.getElementById('modal').addEventListener('click', function(e) { if(e.target === this) closeModal(); });
 </script>
 </body>
 </html>
