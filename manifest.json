@@ -1,12 +1,21 @@
 {
-  "manifest_version": 3,
-  "name": "Tamil Fantasy Trilogy Writer",
-  "version": "1.0",
-  "description": "Custom writing tool for my 9-lands trilogy.",
-  "action": {
-    "default_title": "Open Writer"
-  },
-  "background": {
-    "service_worker": "background.js"
-  }
+  "name": "Noveler",
+  "short_name": "Noveler",
+  "description": "Tamil Fantasy Novel Writer",
+  "start_url": "/noveler/index.html",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#7c5cbf",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
