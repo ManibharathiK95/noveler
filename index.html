@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noveler</title>
+    <style>
+        :root {
+            --bg-darkest: #111111;
+            --bg-dark: #1a1a1a;
+            --bg-panel: #222222;
+            --bg-hover: #2a2a2a;
+            --bg-editor: #1e1e1e;
+            --text-main: #d4d4d4;
+            --text-muted: #6e6e6e;
+            --accent: #7c5cbf;
+            --accent-hover: #9b7fd4;
+            --border: #333333;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-darkest); color: var(--text-main);
+            display: flex; height: 100vh; overflow: hidden;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* LEFT SIDEBAR */
+        .sidebar-left {
+            width: 280px; min-width: 280px; background: var(--bg-dark);
+            border-right: 1px solid var(--border); display: flex; flex-direction: column;
+            transition: margin-left 0.3s ease;
+        }
+        .sidebar-left.hidden { margin-left: -280px; }
+        .sidebar-header {
+            padding: 15px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-weight: bold; font-size: 18px; color: var(--accent); letter-spacing: 1px; }
+        .tree-container { flex: 1; overflow-y: auto; padding: 10px; }
+        
+        .book-header { display: flex; align-items: center; cursor: pointer; padding: 8px; border-radius: 4px; }
+        .book-header:hover { background: var(--bg-hover); }
+        .book-title { font-weight: bold; color: var(--accent); margin-left: 10px; flex: 1; }
+        .chapter-container { margin-left: 20px; border-left: 1px solid var(--border); padding-left: 5px; }
+        .ch-header { display: flex; align-items: center; padding: 6px; cursor: pointer; border-radius: 4px;}
+        .ch-header:hover { background: var(--bg-hover); }
+        .ch-title { margin-left: 10px; flex: 1; font-size: 14px; }
+        
+        .scene-container { margin-left: 20px; }
+        .scene-item {
+            display: flex; align-items: center; padding: 6px 8px; cursor: pointer;
+            border-radius: 4px; font-size: 13px; color: var(--text-muted); margin: 2px 0;
+        }
+        .scene-item.active { background: var(--accent); color: white; }
+        .scene-item:hover:not(.active) { background: var(--bg-hover); color: var(--text-main); }
+        
+        .status-badge {
+            font-size: 9px; padding: 2px 6px; border-radius: 10px; margin-left: auto;
+            text-transform: uppercase; font-weight: bold;
+        }
+        .status-draft { background: rgba(255, 152, 0, 0.2); color: var(--warning); }
+        .status-edit { background: rgba(124, 92, 191, 0.2); color: var(--accent); }
+        .status-final { background: rgba(76, 175, 80, 0.2); color: var(--success); }
+
+        .btn-icon {
+            background: none; border: none; color: var(--text-muted); cursor: pointer;
+            font-size: 16px; padding: 2px 4px; border-radius: 3px;
+        }
+        .btn-icon:hover { color: var(--accent); background: var(--bg-darkest); }
+
+        /* MAIN EDITOR */
+        .main-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-darkest); }
+        .toolbar {
+            background: var(--bg-dark); padding: 8px 15px; border-bottom: 1px solid var(--border);
+            display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+        }
+        .toolbar button, .toolbar select {
+            background: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border);
+            padding: 5px 10px; cursor: pointer; border-radius: 4px; font-size: 12px;
+        }
+        .toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+        .separator { width: 1px; height: 20px; background: var(--border); }
+        
+        .tamil-toggle {
+            background: var(--bg-darkest); color: var(--text-muted); border: 1px solid var(--border);
+            padding: 5px 12px; border-radius: 12px; font-size: 11px; cursor: pointer; font-weight: bold;
+        }
+        .tamil-toggle.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .search-bar {
+            display: none; padding: 10px 15px; background: var(--bg-panel);
+            border-bottom: 1px solid var(--border); gap: 10px;
+        }
+        .search-bar.active { display: flex; }
+        .search-bar input {
+            flex: 1; background: var(--bg-darkest); color: var(--text-main);
+            border: 1px solid var(--border); padding: 6px; border-radius: 4px;
+        }
+
+        .editor-scroll { flex: 1; overflow-y: auto; display: flex; justify-content: center; padding: 40px 20px; }
+        .writing-area {
+            width: 100%; max-width: 700px; min-height: 900px; background: var(--bg-editor);
+            padding: 60px 80px; box-shadow: 0 0 40px rgba(0,0,0,0.5); outline: none;
+            line-height: 1.8; font-size: 16px; border-radius: 2px;
+        }
+
+        .bottom-bar {
+            background: var(--bg-dark); border-top: 1px solid var(--border);
+            padding: 10px 20px; display: flex; align-items: center; gap: 15px;
+        }
+        .goal-track { flex: 1; height: 6px; background: var(--bg-panel); border-radius: 3px; overflow: hidden; }
+        .goal-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+        .word-count-display { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+        /* RIGHT SIDEBAR (DASHBOARD) */
+        .sidebar-right {
+            width: 340px; min-width: 340px; background: var(--bg-dark);
+            border-left: 1px solid var(--border); display: flex; flex-direction: column;
+            transition: margin-right 0.3s ease;
+        }
+        .sidebar-right.hidden { margin-right: -340px; }
+        
+        .dash-main-tabs {
+            display: flex; background: var(--bg-darkest); border-bottom: 1px solid var(--border);
+        }
+        .dash-main-tab {
+            flex: 1; background: none; border: none; color: var(--text-muted); padding: 15px;
+            cursor: pointer; font-size: 14px; font-weight: bold; border-bottom: 3px solid transparent;
+        }
+        .dash-main-tab.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
+        
+        .dash-content { flex: 1; overflow-y: auto; padding: 15px; display: none; }
+        .dash-content.active { display: block; }
+
+        .dash-textarea {
+            width: 100%; background: var(--bg-darkest); color: var(--text-main);
+            border: 1px solid var(--border); padding: 12px; border-radius: 4px;
+            font-family: inherit; font-size: 13px; resize: vertical; min-height: 100px;
+            margin-bottom: 15px;
+        }
+        .dash-textarea:focus { outline: none; border-color: var(--accent); }
+
+        /* Organise Tab Specifics */
+        .org-section { margin-bottom: 20px; }
+        .org-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+        }
+        .org-title { color: var(--accent); font-size: 14px; font-weight: bold; text-transform: uppercase; }
+        .btn-add-org {
+            background: var(--bg-darkest); color: var(--accent); border: 1px solid var(--accent);
+            padding: 4px 10px; border-radius: 12px; cursor: pointer; font-size: 12px;
+        }
+        .btn-add-org:hover { background: var(--accent); color: white; }
+
+        .org-card {
+            background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px;
+            padding: 12px; margin-bottom: 10px; position: relative;
+        }
+        .org-card-title { font-weight: bold; color: var(--text-main); margin-bottom: 6px; padding-right: 20px;}
+        .org-card-desc { font-size: 12px; color: var(--text-muted); white-space: pre-wrap; }
+        .btn-delete-card {
+            position: absolute; top: 10px; right: 10px; background: none; border: none;
+            color: var(--text-muted); cursor: pointer; font-size: 14px;
+        }
+        .btn-delete-card:hover { color: var(--danger); }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 1000; display: none;
+            justify-content: center; align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px;
+            padding: 25px; width: 400px; max-width: 90%;
+        }
+        .modal-box h3 { margin-bottom: 20px; color: var(--accent); }
+        .modal-input {
+            width: 100%; padding: 10px; margin-bottom: 15px; background: var(--bg-darkest);
+            border: 1px solid var(--border); color: var(--text-main); border-radius: 4px; font-size: 14px;
+        }
+        .modal-input:focus { outline: none; border-color: var(--accent); }
+        .modal-textarea {
+            width: 100%; padding: 10px; margin-bottom: 20px; height: 100px; background: var(--bg-darkest);
+            border: 1px solid var(--border); color: var(--text-main); border-radius: 4px; font-size: 14px; resize: none;
+        }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+        .btn-cancel {
+            padding: 8px 16px; background: var(--bg-panel); color: var(--text-muted);
+            border: 1px solid var(--border); border-radius: 4px; cursor: pointer;
+        }
+        .btn-save {
+            padding: 8px 16px; background: var(--accent); color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-weight: bold;
+        }
+        .btn-save:hover { background: var(--accent-hover); }
+        .desc-hidden { display: none; }
+
+    </style>
+</head>
+<body>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-box">
+            <h3 id="modal-heading">Add Item</h3>
+            <input type="text" class="modal-input" id="modal-title" placeholder="Enter Title..." autofocus>
+            <textarea class="modal-textarea desc-hidden" id="modal-desc" placeholder="Enter Description..."></textarea>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-save" onclick="saveModal()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar-left" id="sidebar-left">
+        <div class="sidebar-header">
+            <div class="logo">NOVELER</div>
+            <button class="btn-icon" onclick="openModal('book')" title="Add Book">+</button>
+        </div>
+        <div class="tree-container" id="tree-container"></div>
+    </div>
+
+    <!-- MAIN AREA -->
+    <div class="main-area">
+        <div class="toolbar">
+            <button class="btn-icon" onclick="toggleSidebars()" title="Focus Mode">☰</button>
+            <div class="separator"></div>
+            <button onclick="execCmd('bold')"><b>B</b></button>
+            <button onclick="execCmd('italic')"><i>I</i></button>
+            <button onclick="execCmd('underline')"><u>U</u></button>
+            <button onclick="execCmd('strikeThrough')"><s>S</s></button>
+            <div class="separator"></div>
+            <button onclick="execCmd('formatBlock', 'h2')">Title</button>
+            <button onclick="execCmd('formatBlock', 'p')">Para</button>
+            <div class="separator"></div>
+            <select onchange="execLineSpacing(this.value)">
+                <option value="1.6">Space 1.6</option>
+                <option value="1.8" selected>Space 1.8</option>
+                <option value="2.0">Space 2.0</option>
+            </select>
+            <div class="separator"></div>
+            <button class="tamil-toggle" id="tamil-toggle" onclick="toggleTamil()">EN -> TA</button>
+            <div class="separator"></div>
+            <button onclick="toggleSearch()">🔍 Find</button>
+            <button onclick="exportTXT()">📄 Export TXT</button>
+        </div>
+
+        <div class="search-bar" id="search-bar">
+            <input type="text" id="search-input" placeholder="Find..." onkeyup="if(event.key==='Enter')window.find(this.value)">
+            <input type="text" id="replace-input" placeholder="Replace with...">
+            <button onclick="replaceText()">Replace</button>
+            <button onclick="replaceTextAll()">All</button>
+        </div>
+
+        <div class="editor-scroll">
+            <div class="writing-area" id="editor" contenteditable="true" oninput="handleInput()">
+                <h2>Start Writing</h2>
+                <p>Select or create a chapter/scene from the left, or just start typing here.</p>
+            </div>
+        </div>
+
+        <div class="bottom-bar">
+            <span style="font-size: 12px; color: var(--text-muted);">Goal:</span>
+            <div class="goal-track"><div class="goal-fill" id="goal-fill"></div></div>
+            <div class="word-count-display">
+                Today: <span id="words-today">0</span>/1000 | Scene: <span id="words-scene">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div class="sidebar-right" id="sidebar-right">
+        <div class="dash-main-tabs">
+            <button class="dash-main-tab active" onclick="switchMainDash('plot', this)">Plot</button>
+            <button class="dash-main-tab" onclick="switchMainDash('organise', this)">Organise</button>
+        </div>
+
+        <!-- PLOT TAB -->
+        <div id="dash-plot" class="dash-content active">
+            <textarea class="dash-textarea" data-dash="plot-premise" placeholder="Core Premise (e.g., 3 parts of a face hidden in 9 lands...)"></textarea>
+            <textarea class="dash-textarea" data-dash="plot-b1" placeholder="Book 1 Summary / Arc..."></textarea>
+            <textarea class="dash-textarea" data-dash="plot-b2" placeholder="Book 2 Summary / Arc..."></textarea>
+            <textarea class="dash-textarea" data-dash="plot-b3" placeholder="Book 3 Summary / Arc (The Sacrifice)..."></textarea>
+            <textarea class="dash-textarea" data-dash="plot-logic" placeholder="Continuity / Logic Tracker (e.g., B1Ch2: Hero loses sword...)"></textarea>
+        </div>
+
+        <!-- ORGANISE TAB -->
+        <div id="dash-organise" class="dash-content">
+            
+            <div class="org-section">
+                <div class="org-header">
+                    <span class="org-title">Characters</span>
+                    <button class="btn-add-org" onclick="openModal('characters')">+ Add</button>
+                </div>
+                <div id="list-characters"></div>
+            </div>
+
+            <div class="org-section">
+                <div class="org-header">
+                    <span class="org-title">Events</span>
+                    <button class="btn-add-org" onclick="openModal('events')">+ Add</button>
+                </div>
+                <div id="list-events"></div>
+            </div>
+
+            <div class="org-section">
+                <div class="org-header">
+                    <span class="org-title">Locations (9 Lands)</span>
+                    <button class="btn-add-org" onclick="openModal('locations')">+ Add</button>
+                </div>
+                <div id="list-locations"></div>
+            </div>
+
+            <div class="org-section">
+                <div class="org-header">
+                    <span class="org-title">Props / Magic</span>
+                    <button class="btn-add-org" onclick="openModal('props')">+ Add</button>
+                </div>
+                <div id="list-props"></div>
+            </div>
+
+            <div class="org-section">
+                <div class="org-header">
+                    <span class="org-title">Extra</span>
+                    <button class="btn-add-org" onclick="openModal('extra')">+ Add</button>
+                </div>
+                <div id="list-extra"></div>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+// --- STATE ---
+let state = {
+    structure: {
+        "Book 1": { "Chapter 1": { "Scene 1": { text: "", status: "draft" } } }
+    },
+    dashboard: {},
+    organise: {
+        characters: [], events: [], locations: [], props: [], extra: []
+    },
+    activePath: null,
+    wordsToday: 0,
+    lastDate: new Date().toDateString(),
+    lastSceneCount: 0
+};
+
+let tamilMode = false;
+let currentModalContext = { type: '', parentBook: '', parentChapter: '' };
+
+// --- TAMIL TRANSLITERATION ---
+const tamilMap = {'a':'அ','aa':'ஆ','i':'இ','ii':'ஈ','u':'உ','uu':'ஊ','e':'எ','ee':'ஏ','ai':'ஐ','o':'ஒ','oo':'ஓ','au':'ஔ','k':'க்','g':'க்','ch':'ச்','j':'ஜ்','t':'ட்','th':'த்','d':'ட்','dh':'த்','p':'ப்','b':'ப்','m':'ம்','n':'ன்','ny':'ஞ்','ng':'ங்','L':'ள்','N':'ண்','r':'ற்','R':'ர்','v':'வ்','y':'ய்','s':'ஸ்','sh':'ஷ்','h':'ஹ்','S':'ச்'};
+
+function handleTamilInput(e) {
+    if(!tamilMode || e.inputType !== 'insertText' || !e.data.match(/[a-zA-Z]/)) return;
+    e.preventDefault();
+    let sel = window.getSelection(); if(!sel.rangeCount) return;
+    let range = sel.getRangeAt(0);
+    let startNode = range.startContainer;
+    if(startNode.nodeType === 3) {
+        let text = startNode.textContent, wordEnd = range.startOffset, wordStart = wordEnd;
+        while(wordStart > 0 && text[wordStart - 1].match(/[a-zA-Z]/)) wordStart--;
+        let currentWord = text.substring(wordStart, wordEnd) + e.data;
+        let translatedWord = currentWord; // Fallback
+        let tempRes = '', i = 0;
+        while(i < currentWord.length) {
+            let matched = false;
+            if(i < currentWord.length - 1) { let duo = currentWord.substring(i, i+2).toLowerCase(); if(tamilMap[duo]) { tempRes += tamilMap[duo]; i += 2; matched = true; } }
+            if(!matched) { let single = currentWord[i].toLowerCase(); if(tamilMap[single]) { tempRes += tamilMap[single]; } else { tempRes += currentWord[i]; } i++; }
+        }
+        translatedWord = tempRes;
+        text = text.substring(0, wordStart) + translatedWord + text.substring(wordEnd);
+        startNode.textContent = text;
+        let newRange = document.createRange();
+        newRange.setStart(startNode, wordStart + translatedWord.length);
+        newRange.collapse(true);
+        sel.removeAllRanges(); sel.addRange(newRange);
+    }
+}
+
+// --- MODAL SYSTEM ---
+function openModal(type, parentBook = '', parentChapter = '') {
+    currentModalContext = { type, parentBook, parentChapter };
+    let modal = document.getElementById('modal');
+    let heading = document.getElementById('modal-heading');
+    let titleIn = document.getElementById('modal-title');
+    let descIn = document.getElementById('modal-desc');
+    
+    titleIn.value = ''; descIn.value = '';
+    
+    // If it's a tree item, hide description. If it's dashboard, show it.
+    if(type === 'book' || type === 'chapter' || type === 'scene') {
+        descIn.classList.add('desc-hidden');
+        if(type === 'book') heading.innerText = "Add New Book";
+        if(type === 'chapter') heading.innerText = "Add New Chapter to " + parentBook;
+        if(type === 'scene') heading.innerText = "Add New Scene to " + parentChapter;
+    } else {
+        descIn.classList.remove('desc-hidden');
+        heading.innerText = "Add " + type.charAt(0).toUpperCase() + type.slice(1);
+    }
+    
+    modal.classList.add('active');
+    setTimeout(() => titleIn.focus(), 100);
+}
+
+function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+}
+
+function saveModal() {
+    let title = document.getElementById('modal-title').value.trim();
+    let desc = document.getElementById('modal-desc').value.trim();
+    if(!title) return;
+
+    let { type, parentBook, parentChapter } = currentModalContext;
+
+    if(type === 'book') {
+        state.structure[title] = { "Chapter 1": { "Scene 1": { text: "", status: "draft" } } };
+    } else if(type === 'chapter') {
+        state.structure[parentBook][title] = { "Scene 1": { text: "", status: "draft" } };
+    } else if(type === 'scene') {
+        state.structure[parentBook][parentChapter][title] = { text: "", status: "draft" };
+    } else {
+        // Dashboard items
+        state.organise[type].push({ id: Date.now(), title, desc });
+        renderOrganiseList(type);
+    }
+
+    saveState();
+    renderTree();
+    closeModal();
+}
+
+// --- DASHBOARD ORGANISE LISTS ---
+function renderOrganiseList(type) {
+    let container = document.getElementById(`list-${type}`);
+    container.innerHTML = '';
+    state.organise[type].forEach(item => {
+        let card = document.createElement('div');
+        card.className = 'org-card';
+        card.innerHTML = `
+            <button class="btn-delete-card" onclick="deleteOrgItem('${type}', ${item.id})">✕</button>
+            <div class="org-card-title">${item.title}</div>
+            <div class="org-card-desc">${item.desc}</div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function deleteOrgItem(type, id) {
+    state.organise[type] = state.organise[type].filter(item => item.id !== id);
+    saveState();
+    renderOrganiseList(type);
+}
+
+function switchMainDash(id, btn) {
+    document.querySelectorAll('.dash-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.dash-main-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById(`dash-${id}`).classList.add('active');
+    btn.classList.add('active');
+}
+
+// --- CORE EDITOR ---
+function handleInput() {
+    clearTimeout(window.saveTimer);
+    window.saveTimer = saveState;
+    updateWordCounts();
+}
+
+function execCmd(cmd, val = null) { document.execCommand(cmd, false, val); document.getElementById('editor').focus(); }
+function execLineSpacing(val) { document.getElementById('editor').style.lineHeight = val; }
+function toggleSearch() { document.getElementById('search-bar').classList.toggle('active'); }
+function replaceText() { let f=document.getElementById('search-input').value, r=document.getElementById('replace-input').value; document.getElementById('editor').innerHTML = document.getElementById('editor').innerHTML.replace(f, r); handleInput(); }
+function replaceTextAll() { let f=document.getElementById('search-input').value, r=document.getElementById('replace-input').value; document.getElementById('editor').innerHTML = document.getElementById('editor').innerHTML.split(f).join(r); handleInput(); }
+function toggleSidebars() { document.getElementById('sidebar-left').classList.toggle('hidden'); document.getElementById('sidebar-right').classList.toggle('hidden'); }
+function toggleTamil() { tamilMode = !tamilMode; document.getElementById('tamil-toggle').classList.toggle('active'); }
+
+// --- WORD COUNTS ---
+function getWordCount(t) { if(!t) return 0; return t.replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(w=>w.length>0).length; }
+function updateWordCounts() {
+    let text = document.getElementById('editor').innerText;
+    let sceneWords = getWordCount(text);
+    document.getElementById('words-scene').innerText = sceneWords;
+    let today = new Date().toDateString();
+    if(state.lastDate !== today) { state.wordsToday = 0; state.lastDate = today; }
+    if(sceneWords > state.lastSceneCount) state.wordsToday += (sceneWords - state.lastSceneCount);
+    state.lastSceneCount = sceneWords;
+    let pct = Math.min((state.wordsToday / 1000) * 100, 100);
+    document.getElementById('goal-fill').style.width = pct + '%';
+    document.getElementById('words-today').innerText = state.wordsToday;
+}
+
+// --- TREE NAVIGATION ---
+function renderTree() {
+    let container = document.getElementById('tree-container');
+    container.innerHTML = '';
+    for(let book in state.structure) {
+        let bookDiv = document.createElement('div');
+        bookDiv.innerHTML = `<div class="book-header" onclick="this.nextElementSibling.classList.toggle('hidden')">
+            <span>📁</span><span class="book-title">${book}</span>
+            <button class="btn-icon" onclick="event.stopPropagation(); openModal('chapter', '${book.replace(/'/g, "\\'")}')">+</button>
+            <button class="btn-icon" onclick="event.stopPropagation(); openModal('scene', '${book.replace(/'/g, "\\'")}', 'New Chapter')" title="Quick Add Chapter+Scene">⧉</button>
+        </div>`;
+        
+        let chContainer = document.createElement('div');
+        chContainer.className = 'chapter-container';
+        for(let ch in state.structure[book]) {
+            let chDiv = document.createElement('div');
+            chDiv.innerHTML = `<div class="ch-header" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                <span>📂</span><span class="ch-title">${ch}</span>
+                <button class="btn-icon" onclick="event.stopPropagation(); openModal('scene', '${book.replace(/'/g, "\\'")}', '${ch.replace(/'/g, "\\'")}')">+</button>
+            </div>`;
+            let scContainer = document.createElement('div');
+            scContainer.className = 'scene-container';
+            for(let sc in state.structure[book][ch]) {
+                let scData = state.structure[book][ch][sc];
+                let isActive = state.activePath === `${book}|${ch}|${sc}`;
+                let scEl = document.createElement('div');
+                scEl.className = `scene-item ${isActive ? 'active' : ''}`;
+                scEl.innerHTML = `📝 ${sc} <span class="status-badge status-${scData.status}">${scData.status}</span>`;
+                scEl.onclick = () => loadScene(book, ch, sc);
+                scContainer.appendChild(scEl);
+            }
+            chDiv.appendChild(scContainer);
+            chContainer.appendChild(chDiv);
+        }
+        bookDiv.appendChild(chContainer);
+        container.appendChild(bookDiv);
+    }
+}
+
+function loadScene(book, ch, sc) {
+    saveState();
+    state.activePath = `${book}|${ch}|${sc}`;
+    state.lastSceneCount = 0;
+    let sceneData = state.structure[book][ch][sc];
+    document.getElementById('editor').innerHTML = sceneData.text || `<h2>${ch}: ${sc}</h2><p></p>`;
+    
+    // Double click to change status
+    document.getElementById('editor').ondblclick = function(e) {
+        if(sceneData.status === 'draft') sceneData.status = 'edit';
+        else if(sceneData.status === 'edit') sceneData.status = 'final';
+        else sceneData.status = 'draft';
+        saveState(); renderTree();
+    };
+    renderTree(); updateWordCounts();
+}
+
+// --- PERSISTENCE ---
+function saveState() {
+    if(state.activePath) {
+        let p = state.activePath.split('|');
+        if(state.structure[p[0]]?.[p[1]]?.[p[2]]) {
+            state.structure[p[0]][p[1]][p[2]].text = document.getElementById('editor').innerHTML;
+        }
+    }
+    // Save plot textareas
+    document.querySelectorAll('.dash-textarea').forEach(ta => {
+        state.dashboard[ta.getAttribute('data-dash')] = ta.value;
+    });
+    localStorage.setItem('noveler_app_state', JSON.stringify(state));
+}
+
+function loadState() {
+    let saved = localStorage.getItem('noveler_app_state');
+    if(saved) {
+        state = JSON.parse(saved);
+        if(state.lastDate !== new Date().toDateString()) state.wordsToday = 0;
+    }
+}
+
+function loadDashboard() {
+    document.querySelectorAll('.dash-textarea').forEach(ta => {
+        ta.value = state.dashboard[ta.getAttribute('data-dash')] || '';
+        ta.oninput = () => { state.dashboard[ta.getAttribute('data-dash')] = ta.value; clearTimeout(window.dashTimer); window.dashTimer = saveState; };
+    });
+    // Render all organise lists
+    ['characters', 'events', 'locations', 'props', 'extra'].forEach(renderOrganiseList);
+}
+
+function exportTXT() {
+    let blob = new Blob([document.getElementById('editor').innerText], {type: "text/plain"});
+    let a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "scene.txt"; a.click();
+}
+
+// --- INIT ---
+window.onload = () => {
+    loadState();
+    renderTree();
+    loadDashboard();
+    document.getElementById('editor').addEventListener('beforeinput', handleTamilInput);
+    
+    if(!state.activePath) {
+        let b = Object.keys(state.structure)[0];
+        let c = Object.keys(state.structure[b])[0];
+        let s = Object.keys(state.structure[b][c])[0];
+        loadScene(b, c, s);
+    } else {
+        let p = state.activePath.split('|');
+        loadScene(p[0], p[1], p[2]);
+    }
+};
+
+// Close modal on outside click
+document.getElementById('modal').addEventListener('click', function(e) {
+    if(e.target === this) closeModal();
+});
+</script>
+</body>
+</html>
