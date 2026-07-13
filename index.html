@@ -7,57 +7,25 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
     <style>
-        /* HIGH CONTRAST DARK THEME */
         :root {
-            --bg-black: #000000;
-            --bg-dark: #0f0f0f;      
-            --bg-panel: #1a1a1a;      
-            --bg-hover: #2a2a2a;      
-            --bg-editor: #050505;     
-            --text-main: #ffffff;      /* PURE WHITE TEXT */
-            --text-muted: #aaaaaa;    /* BRIGHT GREY TEXT */
-            --accent: #a855f7;        /* BRIGHT PURPLE */
-            --border: #333333;
-            --success: #4ade80;       /* BRIGHT GREEN */
-            --warning: #facc15;       /* BRIGHT YELLOW */
-            --danger: #f87171;        /* BRIGHT RED */
+            --bg-black: #000000; --bg-dark: #0f0f0f; --bg-panel: #1a1a1a;
+            --bg-hover: #2a2a2a; --bg-editor: #050505; --text-main: #ffffff;
+            --text-muted: #aaaaaa; --accent: #a855f7; --border: #333333;
+            --success: #4ade80; --warning: #facc15; --danger: #f87171;
         }
-        
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: var(--bg-black); 
-            color: var(--text-main); 
-            display: flex; 
-            height: 100vh; height: 100dvh; 
-            overflow: hidden; 
-        }
-        
-        ::-webkit-scrollbar { width: 6px; } 
-        ::-webkit-scrollbar-track { background: var(--bg-black); } 
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-black); color: var(--text-main); display: flex; height: 100vh; height: 100dvh; overflow: hidden; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-black); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
         .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 90; }
         .overlay.active { display: block; }
 
-        /* LEFT SIDEBAR */
-        .sidebar-left {
-            width: 300px; background: var(--bg-dark); border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s ease;
-        }
-        .sidebar-header { 
-            padding: 15px; border-bottom: 1px solid var(--border); 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: var(--bg-black);
-        }
+        .sidebar-left { width: 300px; background: var(--bg-dark); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s ease; }
+        .sidebar-header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg-black); }
         .logo { font-weight: bold; font-size: 20px; color: var(--accent); letter-spacing: 2px; }
         .tree-container { flex: 1; overflow-y: auto; padding: 10px; }
         
-        /* TREE ITEMS - High Contrast Touch Targets */
-        .tree-row { 
-            display: flex; align-items: center; padding: 12px 8px; border-radius: 6px; 
-            cursor: pointer; min-height: 50px; position: relative; margin-bottom: 2px;
-        }
+        .tree-row { display: flex; align-items: center; padding: 12px 8px; border-radius: 6px; cursor: pointer; min-height: 50px; position: relative; margin-bottom: 2px; }
         .tree-row:hover { background: var(--bg-panel); }
         .tree-arrow { width: 24px; text-align: center; color: var(--text-muted); font-size: 14px; flex-shrink: 0; }
         .tree-icon { margin-right: 12px; font-size: 18px; flex-shrink: 0; }
@@ -66,111 +34,66 @@
         .tree-text.ch-text { font-size: 15px; color: var(--text-main); }
         .tree-text.sc-text { font-size: 14px; color: var(--text-muted); }
         
-        .status-badge { 
-            font-size: 10px; padding: 3px 8px; border-radius: 10px; 
-            text-transform: uppercase; font-weight: bold; flex-shrink: 0; 
-            background: var(--bg-black); color: var(--text-muted);
-        }
+        .status-badge { font-size: 10px; padding: 3px 8px; border-radius: 10px; text-transform: uppercase; font-weight: bold; flex-shrink: 0; background: var(--bg-black); color: var(--text-muted); }
         .status-draft { color: var(--warning); border: 1px solid var(--warning); }
         .status-edit { color: var(--accent); border: 1px solid var(--accent); }
         .status-final { color: var(--success); border: 1px solid var(--success); }
 
-        .three-dots { 
-            display: none; background: none; border: none; color: var(--text-main); 
-            font-size: 20px; cursor: pointer; padding: 5px; flex-shrink: 0; 
-        }
+        .three-dots { display: none; background: none; border: none; color: var(--text-main); font-size: 20px; cursor: pointer; padding: 5px; flex-shrink: 0; }
         @media (hover: hover) and (pointer: fine) { .tree-row:hover .three-dots { display: block; } }
 
         .indent-1 { margin-left: 20px; border-left: 2px solid var(--border); padding-left: 5px; }
         .indent-2 { margin-left: 20px; }
         .hidden-tree { display: none; }
-        
-        .btn-add-main { 
-            background: var(--accent); color: var(--bg-black); border: none; 
-            padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;
-        }
+        .btn-add-main { background: var(--accent); color: var(--bg-black); border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
 
-        /* MAIN EDITOR AREA */
         .main-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-black); min-width: 0; }
-        .toolbar { 
-            background: var(--bg-dark); padding: 10px; border-bottom: 1px solid var(--border); 
-            display: flex; gap: 6px; align-items: center; flex-wrap: wrap; 
-        }
-        .toolbar button, .toolbar select { 
-            background: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border); 
-            padding: 10px 12px; cursor: pointer; border-radius: 6px; font-size: 15px; 
-            transition: 0.2s;
-        }
+        .toolbar { background: var(--bg-dark); padding: 10px; border-bottom: 1px solid var(--border); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .toolbar button, .toolbar select { background: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border); padding: 10px 12px; cursor: pointer; border-radius: 6px; font-size: 15px; transition: 0.2s; }
         .toolbar button:hover, .toolbar button:active { border-color: var(--accent); color: var(--accent); }
+        
+        /* Special styling for Sync buttons so they stand out */
+        .btn-sync { border-color: var(--success) !important; color: var(--success) !important; }
+        .btn-sync:hover { background: var(--success) !important; color: var(--bg-black) !important; }
+
         .separator { width: 1px; height: 26px; background: var(--border); }
 
         .search-bar { display: none; padding: 10px; background: var(--bg-panel); border-bottom: 1px solid var(--border); gap: 10px; }
         .search-bar.active { display: flex; }
-        .search-bar input { 
-            flex: 1; background: var(--bg-black); color: var(--text-main); 
-            border: 1px solid var(--border); padding: 12px; border-radius: 6px; font-size: 16px; 
-        }
+        .search-bar input { flex: 1; background: var(--bg-black); color: var(--text-main); border: 1px solid var(--border); padding: 12px; border-radius: 6px; font-size: 16px; }
 
         .editor-scroll { flex: 1; overflow-y: auto; display: flex; justify-content: center; padding: 20px; }
-        .writing-area { 
-            width: 100%; max-width: 700px; min-height: 80vh; 
-            background: var(--bg-editor); padding: 30px 20px; 
-            box-shadow: 0 0 30px rgba(0,0,0,0.8); outline: none; 
-            line-height: 1.8; font-size: 17px; border-radius: 4px; color: var(--text-main);
-        }
+        .writing-area { width: 100%; max-width: 700px; min-height: 80vh; background: var(--bg-editor); padding: 30px 20px; box-shadow: 0 0 30px rgba(0,0,0,0.8); outline: none; line-height: 1.8; font-size: 17px; border-radius: 4px; color: var(--text-main); }
         @media (min-width: 768px) { .writing-area { padding: 60px 80px; } }
 
-        .bottom-bar { 
-            background: var(--bg-dark); border-top: 1px solid var(--border); 
-            padding: 12px 15px; display: flex; align-items: center; gap: 15px; 
-            font-size: 13px; color: var(--text-muted); font-weight: bold;
-        }
+        .bottom-bar { background: var(--bg-dark); border-top: 1px solid var(--border); padding: 12px 15px; display: flex; align-items: center; gap: 15px; font-size: 13px; color: var(--text-muted); font-weight: bold; }
         .goal-track { flex: 1; height: 8px; background: var(--bg-panel); border-radius: 4px; overflow: hidden; }
         .goal-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
 
-        /* RIGHT SIDEBAR */
-        .sidebar-right { 
-            width: 340px; background: var(--bg-dark); border-left: 1px solid var(--border); 
-            display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s ease; 
-        }
+        .sidebar-right { width: 340px; background: var(--bg-dark); border-left: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s ease; }
         .dash-main-tabs { display: flex; background: var(--bg-black); border-bottom: 1px solid var(--border); }
-        .dash-main-tab { 
-            flex: 1; background: none; border: none; color: var(--text-muted); 
-            padding: 15px; cursor: pointer; font-size: 15px; font-weight: bold; 
-            border-bottom: 3px solid transparent; transition: 0.2s;
-        }
+        .dash-main-tab { flex: 1; background: none; border: none; color: var(--text-muted); padding: 15px; cursor: pointer; font-size: 15px; font-weight: bold; border-bottom: 3px solid transparent; transition: 0.2s; }
         .dash-main-tab.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
         .dash-content { flex: 1; overflow-y: auto; padding: 15px; display: none; }
         .dash-content.active { display: block; }
-        .dash-textarea { 
-            width: 100%; background: var(--bg-black); color: var(--text-main); 
-            border: 1px solid var(--border); padding: 15px; border-radius: 6px; 
-            font-family: inherit; font-size: 15px; resize: vertical; min-height: 100px; margin-bottom: 15px; 
-        }
+        .dash-textarea { width: 100%; background: var(--bg-black); color: var(--text-main); border: 1px solid var(--border); padding: 15px; border-radius: 6px; font-family: inherit; font-size: 15px; resize: vertical; min-height: 100px; margin-bottom: 15px; }
         .dash-textarea:focus { outline: none; border-color: var(--accent); }
 
         .org-section { margin-bottom: 25px; }
         .org-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
         .org-title { color: var(--accent); font-size: 15px; font-weight: bold; text-transform: uppercase; }
-        .btn-add-org { 
-            background: var(--accent); color: var(--bg-black); border: none; 
-            padding: 6px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: bold;
-        }
+        .btn-add-org { background: var(--accent); color: var(--bg-black); border: none; padding: 6px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: bold; }
         .org-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 10px; position: relative; }
         .org-card-title { font-weight: bold; color: var(--text-main); margin-bottom: 8px; padding-right: 20px; font-size: 15px;}
         .org-card-desc { font-size: 13px; color: var(--text-muted); white-space: pre-wrap; }
         .btn-delete-card { position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; }
         .btn-delete-card:hover { color: var(--danger); }
 
-        /* MODALS - HIGH CONTRAST */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 20px; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: var(--bg-dark); border: 2px solid var(--border); border-radius: 12px; padding: 25px; width: 100%; max-width: 400px; }
         .modal-box h3 { margin-bottom: 25px; color: var(--accent); font-size: 20px; }
-        .modal-input { 
-            width: 100%; padding: 15px; margin-bottom: 20px; background: var(--bg-black); 
-            border: 2px solid var(--border); color: var(--text-main); border-radius: 6px; font-size: 16px; 
-        }
+        .modal-input { width: 100%; padding: 15px; margin-bottom: 20px; background: var(--bg-black); border: 2px solid var(--border); color: var(--text-main); border-radius: 6px; font-size: 16px; }
         .modal-input:focus { outline: none; border-color: var(--accent); }
         .modal-textarea { width: 100%; padding: 15px; margin-bottom: 20px; height: 100px; background: var(--bg-black); border: 2px solid var(--border); color: var(--text-main); border-radius: 6px; font-size: 16px; resize: none; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
@@ -181,13 +104,11 @@
         .btn-no { background: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border) !important; }
         .desc-hidden { display: none; }
 
-        /* DESKTOP LAYOUT */
         @media (min-width: 1024px) {
             .sidebar-left, .sidebar-right { position: relative; transform: none !important; }
             .overlay { display: none !important; }
             .mobile-menu-btn { display: none !important; }
         }
-        /* MOBILE LAYOUT */
         @media (max-width: 1023px) {
             .sidebar-left { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); width: 85%; max-width: 350px; }
             .sidebar-left.open { transform: translateX(0); }
@@ -200,6 +121,8 @@
 <body>
 
     <div class="overlay" id="overlay" onclick="closeSidebars()"></div>
+    <!-- Hidden File Input for Importing Database -->
+    <input type="file" id="import-db-file" accept=".json" style="display: none;">
 
     <div class="modal-overlay" id="modal">
         <div class="modal-box">
@@ -238,7 +161,12 @@
             </select>
             <div class="separator"></div>
             <button onclick="toggleSearch()">🔍</button>
-            <button onclick="exportTXT()">📄 Save</button>
+            <button onclick="exportTXT()">📄 Txt</button>
+            
+            <!-- SYNC BUTTONS -->
+            <div class="separator"></div>
+            <button class="btn-sync" onclick="exportDatabase()" title="Download your novel data to transfer to another device">📤 Sync</button>
+            <button class="btn-sync" onclick="document.getElementById('import-db-file').click()" title="Load data from another device">📥 Sync</button>
         </div>
 
         <div class="search-bar" id="search-bar">
@@ -285,24 +213,56 @@ let state = { structure: { "Book 1": { "Chapter 1": { "Scene 1": { text: "", sta
 let currentModalContext = { type: '', parentBook: '', parentChapter: '', oldName: '' };
 let longPressTimer;
 
+// --- SYNC / BACKUP SYSTEM ---
+function exportDatabase() {
+    saveState(); // Ensure absolute latest data is saved
+    let dataStr = JSON.stringify(state, null, 2);
+    let blob = new Blob([dataStr], { type: "application/json" });
+    let a = document.createElement('a');
+    let date = new Date().toISOString().slice(0, 10);
+    a.href = URL.createObjectURL(blob);
+    a.download = `Noveler_Backup_${date}.json`;
+    a.click();
+}
+
+document.getElementById('import-db-file').addEventListener('change', function(event) {
+    let file = event.target.files[0];
+    if (!file) return;
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            let importedState = JSON.parse(e.target.result);
+            // Basic validation to ensure it's a Noveler file
+            if(importedState.structure && importedState.organise) {
+                state = importedState;
+                localStorage.setItem('noveler_app_state', JSON.stringify(state));
+                location.reload(); // Reload UI to show new data safely
+            } else {
+                alert("Invalid Noveler backup file.");
+            }
+        } catch (err) {
+            alert("Error reading file. It might be corrupted.");
+        }
+    };
+    reader.readAsText(file);
+    // Reset input so same file can be imported again if needed
+    this.value = '';
+});
+
+// --- MOBILE SIDEBAR ---
 function toggleLeft() { document.getElementById('sidebar-left').classList.toggle('open'); document.getElementById('overlay').classList.toggle('active'); }
 function toggleRight() { document.getElementById('sidebar-right').classList.toggle('open'); document.getElementById('overlay').classList.toggle('active'); }
 function closeSidebars() { document.getElementById('sidebar-left').classList.remove('open'); document.getElementById('sidebar-right').classList.remove('open'); document.getElementById('overlay').classList.remove('active'); }
 
+// --- MODAL SYSTEM ---
 function openModal(type, parentBook = '', parentChapter = '', oldName = '') {
     currentModalContext = { type, parentBook, parentChapter, oldName };
-    let heading = document.getElementById('modal-heading');
-    let titleIn = document.getElementById('modal-title');
-    let descIn = document.getElementById('modal-desc');
-    let actionsDiv = document.getElementById('modal-actions');
-    
-    titleIn.value = oldName || ''; descIn.value = '';
-    titleIn.classList.add('desc-hidden'); descIn.classList.add('desc-hidden');
-    actionsDiv.innerHTML = '';
+    let heading = document.getElementById('modal-heading'); let titleIn = document.getElementById('modal-title'); let descIn = document.getElementById('modal-desc'); let actionsDiv = document.getElementById('modal-actions');
+    titleIn.value = oldName || ''; descIn.value = ''; titleIn.classList.add('desc-hidden'); descIn.classList.add('desc-hidden'); actionsDiv.innerHTML = '';
 
     if(type === 'book') { heading.innerText = "New Book"; titleIn.classList.remove('desc-hidden'); actionsDiv.innerHTML = `<button class="btn-modal btn-no" onclick="closeModal()">No</button><button class="btn-modal btn-save" onclick="saveModal()">Yes</button>`; }
-    else if(type === 'chapter') { heading.innerText = "New Chapter in " + parentBook; titleIn.classList.remove('desc-hidden'); actionsDiv.innerHTML = `<button class="btn-modal btn-no" onclick="closeModal()">No</button><button class="btn-modal btn-save" onclick="saveModal()">Yes</button>`; }
-    else if(type === 'scene') { heading.innerText = "New Scene in " + parentChapter; titleIn.classList.remove('desc-hidden'); actionsDiv.innerHTML = `<button class="btn-modal btn-no" onclick="closeModal()">No</button><button class="btn-modal btn-save" onclick="saveModal()">Yes</button>`; }
+    else if(type === 'chapter') { heading.innerText = "New Chapter"; titleIn.classList.remove('desc-hidden'); actionsDiv.innerHTML = `<button class="btn-modal btn-no" onclick="closeModal()">No</button><button class="btn-modal btn-save" onclick="saveModal()">Yes</button>`; }
+    else if(type === 'scene') { heading.innerText = "New Scene"; titleIn.classList.remove('desc-hidden'); actionsDiv.innerHTML = `<button class="btn-modal btn-no" onclick="closeModal()">No</button><button class="btn-modal btn-save" onclick="saveModal()">Yes</button>`; }
     else if(type.includes('rename')) { heading.innerText = "Rename"; titleIn.classList.remove('desc-hidden'); actionsDiv.innerHTML = `<button class="btn-modal btn-no" onclick="closeModal()">No</button><button class="btn-modal btn-save" onclick="saveModal()">Yes</button>`; }
     else if(type.includes('delete')) { heading.innerText = "Delete '" + oldName + "'?"; actionsDiv.innerHTML = `<button class="btn-modal btn-no" onclick="closeModal()">No</button><button class="btn-modal btn-yes" onclick="deleteItem()">Yes</button>`; }
     else { heading.innerText = "Add " + type.charAt(0).toUpperCase() + type.slice(1); titleIn.classList.remove('desc-hidden'); descIn.classList.remove('desc-hidden'); actionsDiv.innerHTML = `<button class="btn-modal btn-no" onclick="closeModal()">No</button><button class="btn-modal btn-save" onclick="saveModal()">Yes</button>`; }
@@ -323,9 +283,7 @@ function deleteItem() {
 function clearEditor() { state.activePath = null; document.getElementById('editor').innerHTML = ''; document.getElementById('words-scene').innerText = '0'; }
 
 function saveModal() {
-    let title = document.getElementById('modal-title').value.trim();
-    let desc = document.getElementById('modal-desc').value.trim();
-    if(!title) return;
+    let title = document.getElementById('modal-title').value.trim(); let desc = document.getElementById('modal-desc').value.trim(); if(!title) return;
     let { type, parentBook, parentChapter, oldName } = currentModalContext;
 
     if(type === 'book') state.structure[title] = { "Chapter 1": { "Scene 1": { text: "", status: "draft" } } };
@@ -339,10 +297,12 @@ function saveModal() {
     saveState(); renderTree(); closeModal(); closeSidebars();
 }
 
+// --- DASHBOARD ---
 function renderOrganiseList(type) { let c = document.getElementById(`list-${type}`); c.innerHTML = ''; state.organise[type].forEach(item => { c.innerHTML += `<div class="org-card"><button class="btn-delete-card" onclick="deleteOrgItem('${type}', ${item.id})">✕</button><div class="org-card-title">${item.title}</div><div class="org-card-desc">${item.desc}</div></div>`; }); }
 function deleteOrgItem(type, id) { state.organise[type] = state.organise[type].filter(i => i.id !== id); saveState(); renderOrganiseList(type); }
 function switchMainDash(id, btn) { document.querySelectorAll('.dash-content').forEach(el => el.classList.remove('active')); document.querySelectorAll('.dash-main-tab').forEach(el => el.classList.remove('active')); document.getElementById(`dash-${id}`).classList.add('active'); btn.classList.add('active'); }
 
+// --- EDITOR ---
 function handleInput() { clearTimeout(window.saveTimer); window.saveTimer = saveState; updateWordCounts(); }
 function execCmd(c, v = null) { document.execCommand(c, false, v); document.getElementById('editor').focus(); }
 function execLineSpacing(v) { document.getElementById('editor').style.lineHeight = v; }
@@ -353,91 +313,43 @@ function getWordCount(t) { if(!t) return 0; return t.replace(/<[^>]*>/g, '').tri
 function updateWordCounts() { let w = getWordCount(document.getElementById('editor').innerText); document.getElementById('words-scene').innerText = w; let today = new Date().toDateString(); if(state.lastDate !== today) { state.wordsToday = 0; state.lastDate = today; } if(w > state.lastSceneCount) state.wordsToday += (w - state.lastSceneCount); state.lastSceneCount = w; document.getElementById('goal-fill').style.width = Math.min((state.wordsToday / 1000) * 100, 100) + '%'; document.getElementById('words-today').innerText = state.wordsToday; }
 function exportTXT() { let b = new Blob([document.getElementById('editor').innerText], {type:"text/plain"}); let a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = "scene.txt"; a.click(); }
 
+// --- TREE ---
 function renderTree() {
     let container = document.getElementById('tree-container'); container.innerHTML = '';
     for(let book in state.structure) {
         let safeBook = book.replace(/'/g, "\\'");
-        let bookHtml = `<div class="tree-row" data-type="book" data-name="${safeBook}">
-            <span class="tree-arrow" onclick="event.stopPropagation(); toggleTreeNode(this)">▶</span>
-            <span class="tree-icon">📁</span>
-            <span class="tree-text book-text" onclick="event.stopPropagation(); openModal('rename-book', '', '', '${safeBook}')">${book}</span>
-            <button class="three-dots" onclick="event.stopPropagation(); openModal('delete-book', '', '', '${safeBook}')">⋮</button>
-        </div>`;
-        
+        let bookHtml = `<div class="tree-row" data-type="book" data-name="${safeBook}"><span class="tree-arrow" onclick="event.stopPropagation(); toggleTreeNode(this)">▶</span><span class="tree-icon">📁</span><span class="tree-text book-text" onclick="event.stopPropagation(); openModal('rename-book', '', '', '${safeBook}')">${book}</span><button class="three-dots" onclick="event.stopPropagation(); openModal('delete-book', '', '', '${safeBook}')">⋮</button></div>`;
         let chContainer = `<div class="indent-1 hidden-tree">`;
         for(let ch in state.structure[book]) {
             let safeCh = ch.replace(/'/g, "\\'");
-            chContainer += `<div class="tree-row" data-type="chapter" data-name="${safeCh}" data-parent="${safeBook}">
-                <span class="tree-arrow" onclick="event.stopPropagation(); toggleTreeNode(this)">▶</span>
-                <span class="tree-icon">📂</span>
-                <span class="tree-text ch-text" onclick="event.stopPropagation(); openModal('rename-chapter', '${safeBook}', '', '${safeCh}')">${ch}</span>
-                <button class="three-dots" onclick="event.stopPropagation(); openModal('delete-chapter', '${safeBook}', '', '${safeCh}')">⋮</button>
-            </div>`;
-            
+            chContainer += `<div class="tree-row" data-type="chapter" data-name="${safeCh}" data-parent="${safeBook}"><span class="tree-arrow" onclick="event.stopPropagation(); toggleTreeNode(this)">▶</span><span class="tree-icon">📂</span><span class="tree-text ch-text" onclick="event.stopPropagation(); openModal('rename-chapter', '${safeBook}', '', '${safeCh}')">${ch}</span><button class="three-dots" onclick="event.stopPropagation(); openModal('delete-chapter', '${safeBook}', '', '${safeCh}')">⋮</button></div>`;
             let scContainer = `<div class="indent-2 hidden-tree">`;
             for(let sc in state.structure[book][ch]) {
-                let scData = state.structure[book][ch][sc];
-                let safeSc = sc.replace(/'/g, "\\'");
-                let isActive = state.activePath === `${book}|${ch}|${sc}`;
-                scContainer += `<div class="tree-row ${isActive ? 'active' : ''}" style="${isActive ? 'background:var(--accent); color:white;' : ''}" data-type="scene" data-name="${safeSc}" data-parent="${safeBook}" data-ch="${safeCh}">
-                    <span class="tree-icon" onclick="event.stopPropagation(); loadScene('${safeBook}', '${safeCh}', '${safeSc}'); closeSidebars();" style="cursor:pointer; margin-right:10px;">▶</span>
-                    <span class="tree-text sc-text" onclick="event.stopPropagation(); openModal('rename-scene', '${safeBook}', '${safeCh}', '${safeSc}')">${sc}</span>
-                    <span class="status-badge status-${scData.status}">${scData.status}</span>
-                    <button class="three-dots" onclick="event.stopPropagation(); openModal('delete-scene', '${safeBook}', '${safeCh}', '${safeSc}')">⋮</button>
-                </div>`;
+                let scData = state.structure[book][ch][sc]; let safeSc = sc.replace(/'/g, "\\'"); let isActive = state.activePath === `${book}|${ch}|${sc}`;
+                scContainer += `<div class="tree-row ${isActive ? 'active' : ''}" style="${isActive ? 'background:var(--accent); color:white;' : ''}" data-type="scene" data-name="${safeSc}" data-parent="${safeBook}" data-ch="${safeCh}"><span class="tree-icon" onclick="event.stopPropagation(); loadScene('${safeBook}', '${safeCh}', '${safeSc}'); closeSidebars();" style="cursor:pointer; margin-right:10px;">▶</span><span class="tree-text sc-text" onclick="event.stopPropagation(); openModal('rename-scene', '${safeBook}', '${safeCh}', '${safeSc}')">${sc}</span><span class="status-badge status-${scData.status}">${scData.status}</span><button class="three-dots" onclick="event.stopPropagation(); openModal('delete-scene', '${safeBook}', '${safeCh}', '${safeSc}')">⋮</button></div>`;
             }
-            scContainer += `</div>`;
-            chContainer += scContainer;
+            scContainer += `</div>`; chContainer += scContainer;
         }
-        chContainer += `</div>`;
-        container.innerHTML += bookHtml + chContainer;
+        chContainer += `</div>`; container.innerHTML += bookHtml + chContainer;
     }
     attachLongPressListeners();
 }
-
 function toggleTreeNode(arrow) { arrow.textContent = arrow.textContent === '▶' ? '▼' : '▶'; arrow.closest('.tree-row').nextElementSibling.classList.toggle('hidden-tree'); }
-
 function loadScene(book, ch, sc) {
-    saveState(); state.activePath = `${book}|${ch}|${sc}`; state.lastSceneCount = 0;
-    let sceneData = state.structure[book][ch][sc];
+    saveState(); state.activePath = `${book}|${ch}|${sc}`; state.lastSceneCount = 0; let sceneData = state.structure[book][ch][sc];
     document.getElementById('editor').innerHTML = sceneData.text || '';
-    document.getElementById('editor').ondblclick = function() {
-        if(sceneData.status === 'draft') sceneData.status = 'edit';
-        else if(sceneData.status === 'edit') sceneData.status = 'final';
-        else sceneData.status = 'draft';
-        saveState(); renderTree();
-    };
+    document.getElementById('editor').ondblclick = function() { if(sceneData.status === 'draft') sceneData.status = 'edit'; else if(sceneData.status === 'edit') sceneData.status = 'final'; else sceneData.status = 'draft'; saveState(); renderTree(); };
     renderTree(); updateWordCounts();
 }
 
-function attachLongPressListeners() {
-    document.querySelectorAll('.tree-row').forEach(row => {
-        row.removeEventListener('touchstart', handleTouchStart);
-        row.removeEventListener('touchend', handleTouchEnd);
-        row.removeEventListener('touchmove', handleTouchMove);
-        row.addEventListener('touchstart', handleTouchStart, {passive: true});
-        row.addEventListener('touchend', handleTouchEnd);
-        row.addEventListener('touchmove', handleTouchMove, {passive: true});
-    });
-}
-function handleTouchStart(e) {
-    let row = e.target.closest('.tree-row'); if(!row) return;
-    longPressTimer = setTimeout(() => {
-        if (navigator.vibrate) navigator.vibrate(50);
-        let type = row.dataset.type; let name = row.dataset.name; let parent = row.dataset.parent || ''; let ch = row.dataset.ch || '';
-        if(type === 'book') openModal('delete-book', '', '', name);
-        else if(type === 'chapter') openModal('delete-chapter', parent, '', name);
-        else if(type === 'scene') openModal('delete-scene', parent, ch, name);
-    }, 600);
-}
+// --- LONG PRESS ---
+function attachLongPressListeners() { document.querySelectorAll('.tree-row').forEach(row => { row.removeEventListener('touchstart', handleTouchStart); row.removeEventListener('touchend', handleTouchEnd); row.removeEventListener('touchmove', handleTouchMove); row.addEventListener('touchstart', handleTouchStart, {passive: true}); row.addEventListener('touchend', handleTouchEnd); row.addEventListener('touchmove', handleTouchMove, {passive: true}); }); }
+function handleTouchStart(e) { let row = e.target.closest('.tree-row'); if(!row) return; longPressTimer = setTimeout(() => { if (navigator.vibrate) navigator.vibrate(50); let type = row.dataset.type; let name = row.dataset.name; let parent = row.dataset.parent || ''; let ch = row.dataset.ch || ''; if(type === 'book') openModal('delete-book', '', '', name); else if(type === 'chapter') openModal('delete-chapter', parent, '', name); else if(type === 'scene') openModal('delete-scene', parent, ch, name); }, 600); }
 function handleTouchEnd() { clearTimeout(longPressTimer); }
 function handleTouchMove() { clearTimeout(longPressTimer); }
 
-function saveState() {
-    if(state.activePath) { let p = state.activePath.split('|'); if(state.structure[p[0]]?.[p[1]]?.[p[2]]) state.structure[p[0]][p[1]][p[2]].text = document.getElementById('editor').innerHTML; }
-    document.querySelectorAll('.dash-textarea').forEach(ta => { state.dashboard[ta.getAttribute('data-dash')] = ta.value; });
-    localStorage.setItem('noveler_app_state', JSON.stringify(state));
-}
+// --- SAVE/LOAD ---
+function saveState() { if(state.activePath) { let p = state.activePath.split('|'); if(state.structure[p[0]]?.[p[1]]?.[p[2]]) state.structure[p[0]][p[1]][p[2]].text = document.getElementById('editor').innerHTML; } document.querySelectorAll('.dash-textarea').forEach(ta => { state.dashboard[ta.getAttribute('data-dash')] = ta.value; }); localStorage.setItem('noveler_app_state', JSON.stringify(state)); }
 function loadState() { let s = localStorage.getItem('noveler_app_state'); if(s) { state = JSON.parse(s); if(state.lastDate !== new Date().toDateString()) state.wordsToday = 0; } }
 function loadDashboard() { document.querySelectorAll('.dash-textarea').forEach(ta => { ta.value = state.dashboard[ta.getAttribute('data-dash')] || ''; ta.oninput = () => { state.dashboard[ta.getAttribute('data-dash')] = ta.value; clearTimeout(window.dashTimer); window.dashTimer = saveState; }; }); ['characters', 'events', 'locations', 'props', 'extra'].forEach(renderOrganiseList); }
 
